@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H1B Sponsor Company Heatmap</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        #treemap {
+            width: 100%;
+            height: 800px;
+            margin-top: 30px;
+            position: relative;
+        }
+        
+        .treemap-cell {
+            position: absolute;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 8px;
+        }
+        
+        .treemap-cell:hover {
+            border-color: rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .treemap-cell.icc {
+            border-color: #ff6b6b;
+            border-width: 3px;
+        }
+        
+        .cell-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .cell-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+        
+        .cell-rank {
+            font-size: 0.75em;
+            font-weight: bold;
+            opacity: 0.9;
+        }
+        
+        .cell-icc-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.65em;
+            font-weight: bold;
+        }
+        
+        .cell-name {
+            font-weight: bold;
+            font-size: 0.9em;
+            line-height: 1.2;
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
+        
+        .cell-value {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: auto;
+        }
+        
+        .cell-change {
+            font-size: 0.7em;
+            margin-top: 2px;
+        }
+        
+        .cell-change.up {
+            color: #27ae60;
+        }
+        
+        .cell-change.down {
+            color: #e74c3c;
+        }
+        
+        .legend {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .tooltip {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 6px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            font-size: 0.9em;
+            max-width: 300px;
+        }
+        
+        .tooltip.show {
+            opacity: 1;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 H1B Sponsor Company Heatmap</h1>
+        <p class="subtitle">Top 30 Companies by H1B Beneficiaries Approved (Size = Number of Beneficiaries)</p>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value">30</div>
+                <div class="stat-label">Companies</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">93,342</div>
+                <div class="stat-label">Total Beneficiaries</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">7</div>
+                <div class="stat-label">ICC Companies</div>
+            </div>
+        </div>
+        
+        <div id="treemap"></div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div style="border: 2px solid #ff6b6b; padding: 2px 6px; border-radius: 4px;">ICC</div>
+                <span>ICC Company</span>
+            </div>
+            <div class="legend-item">
+                <span style="color: #666; font-size: 0.9em;">Colors represent company brand colors</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tooltip" id="tooltip"></div>
+    
+    <script>
+        const companies = [{"name": "Amazon", "full_name": "AMAZON", "beneficiaries": 16834, "rank": 1, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#FF9900"}, {"name": "Meta", "full_name": "META PLATFORMS INC", "beneficiaries": 6276, "rank": 2, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#0081FB"}, {"name": "Microsoft", "full_name": "MICROSOFT CORPORATION", "beneficiaries": 6241, "rank": 3, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#00A4EF"}, {"name": "TCS", "full_name": "TATA CONSULTANCY SERVICES LIMITED", "beneficiaries": 6021, "rank": 4, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "#0070AD"}, {"name": "Google", "full_name": "GOOGLE LLC", "beneficiaries": 5436, "rank": 5, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#4285F4"}, {"name": "Apple", "full_name": "APPLE INC", "beneficiaries": 5360, "rank": 6, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#000000"}, {"name": "Cognizant", "full_name": "COGNIZANT TECHNOLOGY SOLUTIONS US CORP", "beneficiaries": 3843, "rank": 7, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "#0066CC"}, {"name": "Walmart", "full_name": "WAL-MART ASSOCIATES INC", "beneficiaries": 3224, "rank": 8, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#0071CE"}, {"name": "Deloitte", "full_name": "DELOITTE CONSULTING LLP", "beneficiaries": 2946, "rank": 9, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#86BC25"}, {"name": "JPMorgan Chase", "full_name": "JPMORGAN CHASE AND CO", "beneficiaries": 2927, "rank": 10, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#0066CC"}, {"name": "Infosys", "full_name": "INFOSYS LIMITED", "beneficiaries": 2848, "rank": 11, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 9, "brand_color": "#0073BC"}, {"name": "Oracle", "full_name": "ORACLE AMERICA INC", "beneficiaries": 2659, "rank": 12, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#F80000"}, {"name": "EY", "full_name": "ERNST AND YOUNG U S LLP", "beneficiaries": 2255, "rank": 13, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#FFCC00"}, {"name": "HCL", "full_name": "HCL AMERICA INC", "beneficiaries": 2188, "rank": 14, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 5, "brand_color": "#FF6600"}, {"name": "Capgemini", "full_name": "CAPGEMINI AMERICA INC", "beneficiaries": 2153, "rank": 15, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#0070AD"}, {"name": "Intel", "full_name": "INTEL CORPORATION", "beneficiaries": 2040, "rank": 16, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#0071C5"}, {"name": "Cisco", "full_name": "CISCO SYSTEMS INC", "beneficiaries": 1987, "rank": 17, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#1BA0D7"}, {"name": "IBM", "full_name": "IBM CORPORATION", "beneficiaries": 1899, "rank": 18, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#006699"}, {"name": "Accenture", "full_name": "ACCENTURE LLP", "beneficiaries": 1814, "rank": 19, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#A100FF"}, {"name": "NVIDIA", "full_name": "NVIDIA CORPORATION", "beneficiaries": 1759, "rank": 20, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#76B900"}, {"name": "Wipro", "full_name": "WIPRO LIMITED", "beneficiaries": 1665, "rank": 21, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "#FF6600"}, {"name": "Fidelity Investments", "full_name": "FIDELITY TECHNOLOGY GROUP LLC D B A FIDELITY INVESTMENTS", "beneficiaries": 1574, "rank": 22, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#0171BB"}, {"name": "Salesforce", "full_name": "SALESFORCE INC", "beneficiaries": 1530, "rank": 23, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#00A1E0"}, {"name": "LTIMindtree", "full_name": "LTIMINDTREE LIMITED", "beneficiaries": 1328, "rank": 24, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 6, "brand_color": "#0066CC"}, {"name": "Citibank", "full_name": "CITIBANK N A", "beneficiaries": 1244, "rank": 25, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#0066CC"}, {"name": "Qualcomm", "full_name": "QUALCOMM TECHNOLOGIES INC", "beneficiaries": 1133, "rank": 26, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#3253DC"}, {"name": "Tech Mahindra", "full_name": "TECH MAHINDRA AMERICAS INC", "beneficiaries": 1099, "rank": 27, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "#C72E2E"}, {"name": "Tesla", "full_name": "TESLA INC", "beneficiaries": 1076, "rank": 28, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#E31937"}, {"name": "Goldman Sachs", "full_name": "GOLDMAN SACHS AND CO LLC", "beneficiaries": 1041, "rank": 29, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#000000"}, {"name": "PayPal", "full_name": "PAYPAL INC", "beneficiaries": 942, "rank": 30, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#003087"}];
+        
+        // Convert hex color to RGB
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+        
+        // Text color based on background (works with hex colors)
+        function getTextColor(bgColor) {
+            const rgb = hexToRgb(bgColor);
+            if (rgb) {
+                const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+                return brightness > 128 ? '#000' : '#fff';
+            }
+            return '#000';
+        }
+        
+        // Create treemap
+        const treemapContainer = d3.select('#treemap');
+        const width = treemapContainer.node().offsetWidth;
+        const height = 800;
+        
+        // Prepare data for D3 treemap
+        const root = d3.hierarchy({children: companies})
+            .sum(d => d.beneficiaries)
+            .sort((a, b) => b.value - a.value);
+        
+        // Create treemap layout
+        const treemap = d3.treemap()
+            .size([width, height])
+            .padding(2)
+            .round(true);
+        
+        treemap(root);
+        
+        // Create cells
+        const cells = treemapContainer.selectAll('.treemap-cell')
+            .data(root.leaves())
+            .enter()
+            .append('div')
+            .attr('class', d => `treemap-cell ${d.data.is_icc ? 'icc' : ''}`)
+            .style('left', d => d.x0 + 'px')
+            .style('top', d => d.y0 + 'px')
+            .style('width', d => (d.x1 - d.x0) + 'px')
+            .style('height', d => (d.y1 - d.y0) + 'px')
+            .style('background-color', d => d.data.brand_color)
+            .style('color', d => getTextColor(d.data.brand_color))
+            .on('mouseenter', function(event, d) {
+                const tooltip = d3.select('#tooltip');
+                tooltip.html(`
+                    <strong>${d.data.name}</strong><br>
+                    ${d.data.full_name}<br>
+                    Rank: #${d.data.rank}<br>
+                    Beneficiaries: ${d.data.beneficiaries.toLocaleString()}
+                `);
+                tooltip.classed('show', true);
+            })
+            .on('mouseleave', function() {
+                d3.select('#tooltip').classed('show', false);
+            })
+            .on('mousemove', function(event) {
+                const tooltip = d3.select('#tooltip');
+                tooltip.style('left', (event.pageX - tooltip.node().offsetWidth / 2) + 'px')
+                       .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px');
+            });
+        
+        // Add content to cells
+        cells.each(function(d) {
+            const cell = d3.select(this);
+            const cellWidth = d.x1 - d.x0;
+            const cellHeight = d.y1 - d.y0;
+            const minSize = Math.min(cellWidth, cellHeight);
+            
+            let content = '<div class="cell-content">';
+            content += '<div class="cell-header">';
+            content += `<span class="cell-rank">#${d.data.rank}</span>`;
+            if (d.data.is_icc) {
+                content += '<span class="cell-icc-badge">ICC</span>';
+            }
+            content += '</div>';
+            
+            // Only show name if cell is large enough
+            if (minSize > 80) {
+                content += `<div class="cell-name">${d.data.name}</div>`;
+            }
+            
+            // Only show value if cell is large enough
+            if (minSize > 60) {
+                content += `<div class="cell-value">${d.data.beneficiaries.toLocaleString()}</div>`;
+            }
+            
+            // Show rank change if available and cell is large enough
+            if (d.data.rank_change_direction && minSize > 100) {
+                const arrow = d.data.rank_change_direction === 'up' ? '⬆️' : '⬇️';
+                const changeClass = d.data.rank_change_direction;
+                content += `<div class="cell-change ${changeClass}">${arrow} ${d.data.rank_change_value}</div>`;
+            }
+            
+            content += '</div>';
+            cell.html(content);
+        });
+    </script>
+</body>
+</html>
