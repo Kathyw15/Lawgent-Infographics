@@ -57,7 +57,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 8px;
+            padding: 4px;
         }
         
         .treemap-cell:hover {
@@ -66,26 +66,48 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         
-        .treemap-cell.icc {
-            border-color: #ff6b6b;
-            border-width: 3px;
-        }
         
         .cell-content {
             display: flex;
             flex-direction: column;
             height: 100%;
+            position: relative;
+        }
+        
+        .cell-logo-container {
+            position: absolute;
+            top: 20px;
+            left: 4px;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            max-width: calc(100% - 8px);
+        }
+        
+        .cell-company-name {
+            margin-top: 4px;
+            font-size: 0.65em;
+            font-weight: bold;
+            color: #333;
+            line-height: 1.2;
+            word-break: break-word;
+            max-width: 100%;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.7);
+            padding: 2px 4px;
+            border-radius: 3px;
         }
         
         .cell-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         
         .cell-rank {
-            font-size: 0.75em;
+            font-size: 0.7em;
             font-weight: bold;
             opacity: 0.9;
         }
@@ -93,9 +115,9 @@
         .cell-icc-badge {
             background: #ff6b6b;
             color: white;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-size: 0.65em;
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 0.6em;
             font-weight: bold;
         }
         
@@ -108,14 +130,34 @@
         }
         
         .cell-value {
-            font-size: 1.1em;
+            font-size: 0.9em;
             font-weight: bold;
             margin-top: auto;
         }
         
         .cell-change {
-            font-size: 0.7em;
-            margin-top: 2px;
+            font-size: 0.9em;
+            font-weight: bold;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            line-height: 1.2;
+            z-index: 10;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .cell-logo {
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            opacity: 0.7;
         }
         
         .cell-change.up {
@@ -124,6 +166,12 @@
         
         .cell-change.down {
             color: #e74c3c;
+        }
+        
+        .cell-change-arrow {
+            font-size: 1.2em;
+            font-weight: bold;
+            line-height: 1;
         }
         
         .legend {
@@ -186,33 +234,221 @@
         .stat-value {
             font-size: 2em;
             font-weight: bold;
-            color: #667eea;
+            color: #9EBA83;
         }
         
         .stat-label {
             color: #666;
             margin-top: 5px;
         }
+        
+        .year-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px auto;
+            padding: 20px;
+            position: relative;
+            max-width: 90%;
+        }
+        
+        .timeline {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            position: relative;
+            justify-content: space-between;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #9EBA83;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        
+        .year-button {
+            position: relative;
+            z-index: 2;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid #9EBA83;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .year-number {
+            display: none;
+        }
+        
+        .year-button:hover {
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(158, 186, 131, 0.4);
+        }
+        
+        .year-button.active {
+            background: #9EBA83;
+            border-color: #9EBA83;
+            transform: scale(1.3);
+            box-shadow: 0 6px 16px rgba(158, 186, 131, 0.5);
+            width: 20px;
+            height: 20px;
+        }
+        
+        .year-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: #ccc;
+        }
+        
+        .year-label {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.85em;
+            white-space: nowrap;
+            color: #666;
+            font-weight: normal;
+            pointer-events: none;
+        }
+        
+        .year-button.active .year-label {
+            font-weight: bold;
+            color: #9EBA83;
+            font-size: 0.95em;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow: auto;
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 900px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .modal-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .close-button:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        #company-chart {
+            width: 100%;
+            height: 500px;
+            margin-top: 20px;
+        }
+        
+        .chart-bar {
+            fill: #9EBA83;
+            transition: all 0.3s ease;
+        }
+        
+        .chart-bar:hover {
+            fill: #8BA872;
+            opacity: 0.8;
+        }
+        
+        .chart-axis {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .chart-label {
+            font-size: 11px;
+            fill: #666;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔥 H1B Sponsor Company Heatmap</h1>
+        <h1>H1B Sponsor Company Heatmap</h1>
         <p class="subtitle">Top 30 Companies by H1B Beneficiaries Approved (Size = Number of Beneficiaries)</p>
         
-        <div class="stats">
+        <div class="year-selector">
+            <div class="timeline">
+                <div class="timeline-line"></div>
+                <button class="year-button" id="year-2025" onclick="switchYear(2025)"><span class="year-number">2025</span><span class="year-label">2025</span></button> <button class="year-button" id="year-2024" onclick="switchYear(2024)"><span class="year-number">2024</span><span class="year-label">2024</span></button> <button class="year-button" id="year-2023" onclick="switchYear(2023)"><span class="year-number">2023</span><span class="year-label">2023</span></button> <button class="year-button" id="year-2022" onclick="switchYear(2022)"><span class="year-number">2022</span><span class="year-label">2022</span></button> <button class="year-button" id="year-2021" onclick="switchYear(2021)"><span class="year-number">2021</span><span class="year-label">2021</span></button> <button class="year-button" id="year-2020" onclick="switchYear(2020)"><span class="year-number">2020</span><span class="year-label">2020</span></button> <button class="year-button" id="year-2019" onclick="switchYear(2019)"><span class="year-number">2019</span><span class="year-label">2019</span></button> <button class="year-button" id="year-2018" onclick="switchYear(2018)"><span class="year-number">2018</span><span class="year-label">2018</span></button> <button class="year-button" id="year-2017" onclick="switchYear(2017)"><span class="year-number">2017</span><span class="year-label">2017</span></button> <button class="year-button" id="year-2016" onclick="switchYear(2016)"><span class="year-number">2016</span><span class="year-label">2016</span></button>
+            </div>
+        </div>
+        
+        <div class="stats" id="stats">
             <div class="stat-item">
-                <div class="stat-value">30</div>
+                <div class="stat-value" id="stat-count">30</div>
                 <div class="stat-label">Companies</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value">93,342</div>
+                <div class="stat-value" id="stat-total">93,342</div>
                 <div class="stat-label">Total Beneficiaries</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value">7</div>
+                <div class="stat-value" id="stat-icc">7</div>
                 <div class="stat-label">ICC Companies</div>
             </div>
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f0f4ff; border-radius: 8px; color: #9EBA83; font-size: 0.95em;">
+            💡 点击公司名查看该公司历年H1B申请通过数趋势
         </div>
         
         <div id="treemap"></div>
@@ -222,16 +458,86 @@
                 <div style="border: 2px solid #ff6b6b; padding: 2px 6px; border-radius: 4px;">ICC</div>
                 <span>ICC Company</span>
             </div>
-            <div class="legend-item">
-                <span style="color: #666; font-size: 0.9em;">Colors represent company brand colors</span>
-            </div>
         </div>
     </div>
     
     <div class="tooltip" id="tooltip"></div>
     
+    <!-- 公司详情模态框 -->
+    <div id="company-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-company-name">Company Name</h2>
+                <button class="close-button" onclick="closeModal()">&times;</button>
+            </div>
+            <div>
+                <h3 id="modal-chart-title" style="margin-bottom: 20px; color: #666;"></h3>
+                <div id="company-chart"></div>
+            </div>
+        </div>
+    </div>
+    
     <script>
-        const companies = [{"name": "Amazon", "full_name": "AMAZON", "beneficiaries": 16834, "rank": 1, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#FF9900"}, {"name": "Meta", "full_name": "META PLATFORMS INC", "beneficiaries": 6276, "rank": 2, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#0081FB"}, {"name": "Microsoft", "full_name": "MICROSOFT CORPORATION", "beneficiaries": 6241, "rank": 3, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#00A4EF"}, {"name": "TCS", "full_name": "TATA CONSULTANCY SERVICES LIMITED", "beneficiaries": 6021, "rank": 4, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "#0070AD"}, {"name": "Google", "full_name": "GOOGLE LLC", "beneficiaries": 5436, "rank": 5, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#4285F4"}, {"name": "Apple", "full_name": "APPLE INC", "beneficiaries": 5360, "rank": 6, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#000000"}, {"name": "Cognizant", "full_name": "COGNIZANT TECHNOLOGY SOLUTIONS US CORP", "beneficiaries": 3843, "rank": 7, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "#0066CC"}, {"name": "Walmart", "full_name": "WAL-MART ASSOCIATES INC", "beneficiaries": 3224, "rank": 8, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#0071CE"}, {"name": "Deloitte", "full_name": "DELOITTE CONSULTING LLP", "beneficiaries": 2946, "rank": 9, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#86BC25"}, {"name": "JPMorgan Chase", "full_name": "JPMORGAN CHASE AND CO", "beneficiaries": 2927, "rank": 10, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#0066CC"}, {"name": "Infosys", "full_name": "INFOSYS LIMITED", "beneficiaries": 2848, "rank": 11, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 9, "brand_color": "#0073BC"}, {"name": "Oracle", "full_name": "ORACLE AMERICA INC", "beneficiaries": 2659, "rank": 12, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#F80000"}, {"name": "EY", "full_name": "ERNST AND YOUNG U S LLP", "beneficiaries": 2255, "rank": 13, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#FFCC00"}, {"name": "HCL", "full_name": "HCL AMERICA INC", "beneficiaries": 2188, "rank": 14, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 5, "brand_color": "#FF6600"}, {"name": "Capgemini", "full_name": "CAPGEMINI AMERICA INC", "beneficiaries": 2153, "rank": 15, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#0070AD"}, {"name": "Intel", "full_name": "INTEL CORPORATION", "beneficiaries": 2040, "rank": 16, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#0071C5"}, {"name": "Cisco", "full_name": "CISCO SYSTEMS INC", "beneficiaries": 1987, "rank": 17, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#1BA0D7"}, {"name": "IBM", "full_name": "IBM CORPORATION", "beneficiaries": 1899, "rank": 18, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#006699"}, {"name": "Accenture", "full_name": "ACCENTURE LLP", "beneficiaries": 1814, "rank": 19, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#A100FF"}, {"name": "NVIDIA", "full_name": "NVIDIA CORPORATION", "beneficiaries": 1759, "rank": 20, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#76B900"}, {"name": "Wipro", "full_name": "WIPRO LIMITED", "beneficiaries": 1665, "rank": 21, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "#FF6600"}, {"name": "Fidelity Investments", "full_name": "FIDELITY TECHNOLOGY GROUP LLC D B A FIDELITY INVESTMENTS", "beneficiaries": 1574, "rank": 22, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#0171BB"}, {"name": "Salesforce", "full_name": "SALESFORCE INC", "beneficiaries": 1530, "rank": 23, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#00A1E0"}, {"name": "LTIMindtree", "full_name": "LTIMINDTREE LIMITED", "beneficiaries": 1328, "rank": 24, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 6, "brand_color": "#0066CC"}, {"name": "Citibank", "full_name": "CITIBANK N A", "beneficiaries": 1244, "rank": 25, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#0066CC"}, {"name": "Qualcomm", "full_name": "QUALCOMM TECHNOLOGIES INC", "beneficiaries": 1133, "rank": 26, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#3253DC"}, {"name": "Tech Mahindra", "full_name": "TECH MAHINDRA AMERICAS INC", "beneficiaries": 1099, "rank": 27, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "#C72E2E"}, {"name": "Tesla", "full_name": "TESLA INC", "beneficiaries": 1076, "rank": 28, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#E31937"}, {"name": "Goldman Sachs", "full_name": "GOLDMAN SACHS AND CO LLC", "beneficiaries": 1041, "rank": 29, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#000000"}, {"name": "PayPal", "full_name": "PAYPAL INC", "beneficiaries": 942, "rank": 30, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "#003087"}];
+        // 所有年份的数据
+        const allYearsData = {
+            2016: [{"name": "Cognizant", "full_name": "COGNIZANT TECHNOLOGY SOLUTIONS US CORP", "beneficiaries": 22164, "rank": 1, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 15.0%, 85.0%)"}, {"name": "Infosys", "full_name": "INFOSYS LIMITED", "beneficiaries": 13818, "rank": 2, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 15.535714285714286%, 84.10714285714286%)"}, {"name": "TCS", "full_name": "TATA CONSULTANCY SERVICES LIMITED", "beneficiaries": 11625, "rank": 3, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 16.071428571428573%, 83.21428571428571%)"}, {"name": "Wipro", "full_name": "WIPRO LIMITED", "beneficiaries": 7148, "rank": 4, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 16.607142857142858%, 82.32142857142857%)"}, {"name": "Accenture", "full_name": "ACCENTURE LLP", "beneficiaries": 6899, "rank": 5, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 17.142857142857142%, 81.42857142857143%)"}, {"name": "HCL", "full_name": "HCL AMERICA INC", "beneficiaries": 3667, "rank": 6, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 17.67857142857143%, 80.53571428571429%)"}, {"name": "Tech Mahindra", "full_name": "TECH MAHINDRA AMERICAS INC", "beneficiaries": 3201, "rank": 7, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 18.214285714285715%, 79.64285714285714%)"}, {"name": "Microsoft", "full_name": "MICROSOFT CORPORATION", "beneficiaries": 2992, "rank": 8, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 18.75%, 78.75%)"}, {"name": "Deloitte", "full_name": "DELOITTE CONSULTING LLP", "beneficiaries": 2922, "rank": 9, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 19.285714285714285%, 77.85714285714286%)"}, {"name": "IBM", "full_name": "IBM CORPORATION", "beneficiaries": 2779, "rank": 10, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 19.821428571428573%, 76.96428571428571%)"}, {"name": "Amazon", "full_name": "AMAZON", "beneficiaries": 2506, "rank": 11, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 20.357142857142858%, 76.07142857142857%)"}, {"name": "Syntel", "full_name": "SYNTEL INC", "beneficiaries": 2293, "rank": 12, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 20.892857142857142%, 75.17857142857143%)"}, {"name": "Apple", "full_name": "APPLE INC", "beneficiaries": 2039, "rank": 13, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 21.428571428571427%, 74.28571428571429%)"}, {"name": "Google", "full_name": "GOOGLE LLC", "beneficiaries": 2001, "rank": 14, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 21.964285714285715%, 73.39285714285714%)"}, {"name": "EY", "full_name": "ERNST AND YOUNG U S LLP", "beneficiaries": 1710, "rank": 15, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 22.5%, 72.5%)"}, {"name": "L&T Infotech", "full_name": "LARSEN AND TOUBRO INFOTECH LIMITED", "beneficiaries": 1697, "rank": 16, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 23.035714285714285%, 71.60714285714286%)"}, {"name": "Intel", "full_name": "INTEL CORPORATION", "beneficiaries": 1602, "rank": 17, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 23.57142857142857%, 70.71428571428572%)"}, {"name": "Cisco", "full_name": "CISCO SYSTEMS INC", "beneficiaries": 1593, "rank": 18, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 24.107142857142854%, 69.82142857142857%)"}, {"name": "Oracle", "full_name": "ORACLE AMERICA INC", "beneficiaries": 1429, "rank": 19, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 24.642857142857146%, 68.92857142857143%)"}, {"name": "Qualcomm", "full_name": "QUALCOMM TECHNOLOGIES INC", "beneficiaries": 1325, "rank": 20, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 25.17857142857143%, 68.03571428571428%)"}, {"name": "JPMorgan Chase", "full_name": "JPMORGAN CHASE AND CO", "beneficiaries": 1257, "rank": 21, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 25.714285714285715%, 67.14285714285714%)"}, {"name": "UST", "full_name": "UST GLOBAL INC", "beneficiaries": 1226, "rank": 22, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 26.25%, 66.25%)"}, {"name": "L&T Technology Services", "full_name": "LARSEN AND TOUBRO TECHNOLOGY SERVICES LIMITED", "beneficiaries": 1182, "rank": 23, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 26.785714285714285%, 65.35714285714286%)"}, {"name": "Mindtree", "full_name": "MINDTREE LIMITED", "beneficiaries": 1168, "rank": 24, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 27.32142857142857%, 64.46428571428572%)"}, {"name": "IGATE", "full_name": "IGATE CORPORATION", "beneficiaries": 1122, "rank": 25, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 27.857142857142854%, 63.57142857142857%)"}, {"name": "PwC", "full_name": "PRICEWATERHOUSECOOPERS LLP", "beneficiaries": 1114, "rank": 26, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 28.392857142857146%, 62.67857142857143%)"}, {"name": "Mphasis", "full_name": "MPHASIS LIMITED", "beneficiaries": 1063, "rank": 27, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 28.92857142857143%, 61.785714285714285%)"}, {"name": "Meta", "full_name": "META PLATFORMS INC", "beneficiaries": 978, "rank": 28, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 29.464285714285715%, 60.89285714285714%)"}], 2017: [{"name": "Cognizant", "full_name": "COGNIZANT TECHNOLOGY SOLUTIONS US CORP", "beneficiaries": 29358, "rank": 1, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 15.0%, 85.0%)"}, {"name": "TCS", "full_name": "TATA CONSULTANCY SERVICES LIMITED", "beneficiaries": 14960, "rank": 2, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(270, 15.5%, 84.16666666666667%)"}, {"name": "Infosys", "full_name": "INFOSYS LIMITED", "beneficiaries": 13655, "rank": 3, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(270, 16.0%, 83.33333333333333%)"}, {"name": "Deloitte", "full_name": "DELOITTE CONSULTING LLP", "beneficiaries": 7328, "rank": 4, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 16.5%, 82.5%)"}, {"name": "Wipro", "full_name": "WIPRO LIMITED", "beneficiaries": 6822, "rank": 5, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(270, 17.0%, 81.66666666666667%)"}, {"name": "Accenture", "full_name": "ACCENTURE LLP", "beneficiaries": 5093, "rank": 6, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 17.5%, 80.83333333333333%)"}, {"name": "Tech Mahindra", "full_name": "TECH MAHINDRA AMERICAS INC", "beneficiaries": 4913, "rank": 7, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 18.0%, 80.0%)"}, {"name": "HCL", "full_name": "HCL AMERICA INC", "beneficiaries": 4452, "rank": 8, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(270, 18.5%, 79.16666666666667%)"}, {"name": "Microsoft", "full_name": "MICROSOFT CORPORATION", "beneficiaries": 4064, "rank": 9, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 19.0%, 78.33333333333333%)"}, {"name": "Amazon", "full_name": "AMAZON", "beneficiaries": 3851, "rank": 10, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 19.5%, 77.5%)"}, {"name": "IBM", "full_name": "IBM CORPORATION", "beneficiaries": 3838, "rank": 11, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 20.0%, 76.66666666666667%)"}, {"name": "EY", "full_name": "ERNST AND YOUNG U S LLP", "beneficiaries": 3112, "rank": 12, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(140, 20.5%, 75.83333333333333%)"}, {"name": "Capgemini", "full_name": "CAPGEMINI AMERICA INC", "beneficiaries": 3003, "rank": 13, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 21.0%, 75.0%)"}, {"name": "PwC", "full_name": "PRICEWATERHOUSECOOPERS LLP", "beneficiaries": 2551, "rank": 14, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 12, "brand_color": "hsl(140, 21.5%, 74.16666666666667%)"}, {"name": "Google", "full_name": "GOOGLE LLC", "beneficiaries": 2293, "rank": 15, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 22.0%, 73.33333333333333%)"}, {"name": "Intel", "full_name": "INTEL CORPORATION", "beneficiaries": 2152, "rank": 16, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 22.5%, 72.5%)"}, {"name": "Syntel", "full_name": "SYNTEL INC", "beneficiaries": 2143, "rank": 17, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 5, "brand_color": "hsl(270, 23.0%, 71.66666666666667%)"}, {"name": "Apple", "full_name": "APPLE INC", "beneficiaries": 2063, "rank": 18, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 5, "brand_color": "hsl(140, 23.5%, 70.83333333333333%)"}, {"name": "L&T Infotech", "full_name": "LARSEN AND TOUBRO INFOTECH LIMITED", "beneficiaries": 1915, "rank": 19, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(270, 24.0%, 70.0%)"}, {"name": "Cisco", "full_name": "CISCO SYSTEMS INC", "beneficiaries": 1593, "rank": 20, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(140, 24.5%, 69.16666666666667%)"}, {"name": "JPMorgan Chase", "full_name": "JPMORGAN CHASE AND CO", "beneficiaries": 1517, "rank": 21, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 25.0%, 68.33333333333334%)"}, {"name": "L&T Technology Services", "full_name": "LARSEN AND TOUBRO TECHNOLOGY SERVICES LIMITED", "beneficiaries": 1504, "rank": 22, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(270, 25.5%, 67.5%)"}, {"name": "Meta", "full_name": "META PLATFORMS INC", "beneficiaries": 1254, "rank": 23, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 26.0%, 66.66666666666667%)"}, {"name": "Mphasis", "full_name": "MPHASIS LIMITED", "beneficiaries": 1201, "rank": 24, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(270, 26.5%, 65.83333333333333%)"}, {"name": "Oracle", "full_name": "ORACLE AMERICA INC", "beneficiaries": 1101, "rank": 25, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 6, "brand_color": "hsl(140, 27.0%, 65.0%)"}, {"name": "UST", "full_name": "UST GLOBAL INC", "beneficiaries": 1075, "rank": 26, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 4, "brand_color": "hsl(270, 27.5%, 64.16666666666666%)"}, {"name": "Mindtree", "full_name": "MINDTREE LIMITED", "beneficiaries": 994, "rank": 27, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(270, 28.0%, 63.33333333333333%)"}, {"name": "Qualcomm", "full_name": "QUALCOMM TECHNOLOGIES INC", "beneficiaries": 948, "rank": 28, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 8, "brand_color": "hsl(140, 28.5%, 62.5%)"}, {"name": "Hexaware", "full_name": "HEXAWARE TECHNOLOGIES INC", "beneficiaries": 947, "rank": 29, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 29.0%, 61.66666666666667%)"}, {"name": "KPMG", "full_name": "KPMG LLP", "beneficiaries": 928, "rank": 30, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 29.5%, 60.83333333333333%)"}], 2018: [{"name": "Cognizant", "full_name": "COGNIZANT TECHNOLOGY SOLUTIONS US CORP", "beneficiaries": 9183, "rank": 1, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 15.0%, 85.0%)"}, {"name": "TCS", "full_name": "TATA CONSULTANCY SERVICES LIMITED", "beneficiaries": 8757, "rank": 2, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 15.5%, 84.16666666666667%)"}, {"name": "Infosys", "full_name": "INFOSYS LIMITED", "beneficiaries": 5699, "rank": 3, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 16.0%, 83.33333333333333%)"}, {"name": "Amazon", "full_name": "AMAZON", "beneficiaries": 5233, "rank": 4, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 6, "brand_color": "hsl(140, 16.5%, 82.5%)"}, {"name": "Deloitte", "full_name": "DELOITTE CONSULTING LLP", "beneficiaries": 4734, "rank": 5, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 17.0%, 81.66666666666667%)"}, {"name": "Microsoft", "full_name": "MICROSOFT CORPORATION", "beneficiaries": 4445, "rank": 6, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(140, 17.5%, 80.83333333333333%)"}, {"name": "Wipro", "full_name": "WIPRO LIMITED", "beneficiaries": 3150, "rank": 7, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(270, 18.0%, 80.0%)"}, {"name": "Apple", "full_name": "APPLE INC", "beneficiaries": 3085, "rank": 8, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 10, "brand_color": "hsl(140, 18.5%, 79.16666666666667%)"}, {"name": "Capgemini", "full_name": "CAPGEMINI AMERICA INC", "beneficiaries": 2876, "rank": 9, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 4, "brand_color": "hsl(270, 19.0%, 78.33333333333333%)"}, {"name": "Google", "full_name": "GOOGLE LLC", "beneficiaries": 2637, "rank": 10, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 19.5%, 77.5%)"}, {"name": "Accenture", "full_name": "ACCENTURE LLP", "beneficiaries": 2564, "rank": 11, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 5, "brand_color": "hsl(140, 20.0%, 76.66666666666667%)"}, {"name": "IBM", "full_name": "IBM CORPORATION", "beneficiaries": 2544, "rank": 12, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 20.5%, 75.83333333333333%)"}, {"name": "EY", "full_name": "ERNST AND YOUNG U S LLP", "beneficiaries": 2475, "rank": 13, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 21.0%, 75.0%)"}, {"name": "Tech Mahindra", "full_name": "TECH MAHINDRA AMERICAS INC", "beneficiaries": 2360, "rank": 14, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 7, "brand_color": "hsl(270, 21.5%, 74.16666666666667%)"}, {"name": "HCL", "full_name": "HCL AMERICA INC", "beneficiaries": 2296, "rank": 15, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 7, "brand_color": "hsl(270, 22.0%, 73.33333333333333%)"}, {"name": "JPMorgan Chase", "full_name": "JPMORGAN CHASE AND CO", "beneficiaries": 2192, "rank": 16, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 22.5%, 72.5%)"}, {"name": "Meta", "full_name": "META PLATFORMS INC", "beneficiaries": 1989, "rank": 17, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 6, "brand_color": "hsl(140, 23.0%, 71.66666666666667%)"}, {"name": "Intel", "full_name": "INTEL CORPORATION", "beneficiaries": 1972, "rank": 18, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(140, 23.5%, 70.83333333333333%)"}, {"name": "Cisco", "full_name": "CISCO SYSTEMS INC", "beneficiaries": 1650, "rank": 19, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 24.0%, 70.0%)"}, {"name": "PwC", "full_name": "PRICEWATERHOUSECOOPERS LLP", "beneficiaries": 1555, "rank": 20, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 6, "brand_color": "hsl(140, 24.5%, 69.16666666666667%)"}, {"name": "L&T Infotech", "full_name": "LARSEN AND TOUBRO INFOTECH LIMITED", "beneficiaries": 1438, "rank": 21, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(270, 25.0%, 68.33333333333334%)"}, {"name": "Oracle", "full_name": "ORACLE AMERICA INC", "beneficiaries": 1294, "rank": 22, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(140, 25.5%, 67.5%)"}, {"name": "Mphasis", "full_name": "MPHASIS LIMITED", "beneficiaries": 1088, "rank": 23, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(270, 26.0%, 66.66666666666667%)"}, {"name": "Syntel", "full_name": "SYNTEL INC", "beneficiaries": 1040, "rank": 24, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 7, "brand_color": "hsl(270, 26.5%, 65.83333333333333%)"}, {"name": "Cummins", "full_name": "CUMMINS INC", "beneficiaries": 916, "rank": 25, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 27.0%, 65.0%)"}, {"name": "Mindtree", "full_name": "MINDTREE LIMITED", "beneficiaries": 912, "rank": 26, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(270, 27.5%, 64.16666666666666%)"}, {"name": "Randstad", "full_name": "RANDSTAD US LP", "beneficiaries": 901, "rank": 27, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 28.0%, 63.33333333333333%)"}, {"name": "Qualcomm", "full_name": "QUALCOMM TECHNOLOGIES INC", "beneficiaries": 878, "rank": 28, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 28.5%, 62.5%)"}, {"name": "Walmart", "full_name": "WAL-MART ASSOCIATES INC", "beneficiaries": 871, "rank": 29, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 29.0%, 61.66666666666667%)"}, {"name": "Salesforce", "full_name": "SALESFORCE INC", "beneficiaries": 806, "rank": 30, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 29.5%, 60.83333333333333%)"}], 2019: [{"name": "Cognizant", "full_name": "COGNIZANT TECHNOLOGY SOLUTIONS US CORP", "beneficiaries": 13254, "rank": 1, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 15.0%, 85.0%)"}, {"name": "Amazon", "full_name": "AMAZON", "beneficiaries": 7608, "rank": 2, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(140, 15.5%, 84.16666666666667%)"}, {"name": "TCS", "full_name": "TATA CONSULTANCY SERVICES LIMITED", "beneficiaries": 7597, "rank": 3, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(270, 16.0%, 83.33333333333333%)"}, {"name": "Deloitte", "full_name": "DELOITTE CONSULTING LLP", "beneficiaries": 7042, "rank": 4, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 16.5%, 82.5%)"}, {"name": "Google", "full_name": "GOOGLE LLC", "beneficiaries": 5977, "rank": 5, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 17.0%, 81.66666666666667%)"}, {"name": "Infosys", "full_name": "INFOSYS LIMITED", "beneficiaries": 5488, "rank": 6, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(270, 17.5%, 80.83333333333333%)"}, {"name": "Microsoft", "full_name": "MICROSOFT CORPORATION", "beneficiaries": 5248, "rank": 7, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 18.0%, 80.0%)"}, {"name": "Apple", "full_name": "APPLE INC", "beneficiaries": 3421, "rank": 8, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 18.5%, 79.16666666666667%)"}, {"name": "Meta", "full_name": "META PLATFORMS INC", "beneficiaries": 3413, "rank": 9, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 8, "brand_color": "hsl(140, 19.0%, 78.33333333333333%)"}, {"name": "Capgemini", "full_name": "CAPGEMINI AMERICA INC", "beneficiaries": 3271, "rank": 10, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(270, 19.5%, 77.5%)"}, {"name": "Wipro", "full_name": "WIPRO LIMITED", "beneficiaries": 3119, "rank": 11, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 4, "brand_color": "hsl(270, 20.0%, 76.66666666666667%)"}, {"name": "IBM", "full_name": "IBM CORPORATION", "beneficiaries": 2918, "rank": 12, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 20.5%, 75.83333333333333%)"}, {"name": "EY", "full_name": "ERNST AND YOUNG U S LLP", "beneficiaries": 2895, "rank": 13, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 21.0%, 75.0%)"}, {"name": "Tech Mahindra", "full_name": "TECH MAHINDRA AMERICAS INC", "beneficiaries": 2796, "rank": 14, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 21.5%, 74.16666666666667%)"}, {"name": "Accenture", "full_name": "ACCENTURE LLP", "beneficiaries": 2713, "rank": 15, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 4, "brand_color": "hsl(140, 22.0%, 73.33333333333333%)"}, {"name": "Intel", "full_name": "INTEL CORPORATION", "beneficiaries": 2713, "rank": 16, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(140, 22.5%, 72.5%)"}, {"name": "HCL", "full_name": "HCL AMERICA INC", "beneficiaries": 2418, "rank": 17, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(270, 23.0%, 71.66666666666667%)"}, {"name": "L&T Infotech", "full_name": "LARSEN AND TOUBRO INFOTECH LIMITED", "beneficiaries": 2222, "rank": 18, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(270, 23.5%, 70.83333333333333%)"}, {"name": "Cisco", "full_name": "CISCO SYSTEMS INC", "beneficiaries": 2087, "rank": 19, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 24.0%, 70.0%)"}, {"name": "Oracle", "full_name": "ORACLE AMERICA INC", "beneficiaries": 1892, "rank": 20, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(140, 24.5%, 69.16666666666667%)"}, {"name": "PwC", "full_name": "PRICEWATERHOUSECOOPERS LLP", "beneficiaries": 1714, "rank": 21, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 25.0%, 68.33333333333334%)"}, {"name": "Walmart", "full_name": "WAL-MART ASSOCIATES INC", "beneficiaries": 1416, "rank": 22, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 7, "brand_color": "hsl(140, 25.5%, 67.5%)"}, {"name": "JPMorgan Chase", "full_name": "JPMORGAN CHASE AND CO", "beneficiaries": 1298, "rank": 23, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 7, "brand_color": "hsl(140, 26.0%, 66.66666666666667%)"}, {"name": "Mphasis", "full_name": "MPHASIS LIMITED", "beneficiaries": 1298, "rank": 24, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(270, 26.5%, 65.83333333333333%)"}, {"name": "Salesforce", "full_name": "SALESFORCE INC", "beneficiaries": 1298, "rank": 25, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 27.0%, 65.0%)"}, {"name": "Qualcomm", "full_name": "QUALCOMM TECHNOLOGIES INC", "beneficiaries": 1255, "rank": 26, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(140, 27.5%, 64.16666666666666%)"}, {"name": "Syntel", "full_name": "SYNTEL INC", "beneficiaries": 1191, "rank": 27, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(270, 28.0%, 63.33333333333333%)"}, {"name": "Uber", "full_name": "UBER TECHNOLOGIES INC", "beneficiaries": 1137, "rank": 28, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 28.5%, 62.5%)"}, {"name": "Randstad", "full_name": "RANDSTAD US LP", "beneficiaries": 1107, "rank": 29, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(140, 29.0%, 61.66666666666667%)"}, {"name": "Mindtree", "full_name": "MINDTREE LIMITED", "beneficiaries": 1019, "rank": 30, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 4, "brand_color": "hsl(270, 29.5%, 60.83333333333333%)"}], 2020: [{"name": "Cognizant", "full_name": "Cognizant", "beneficiaries": 14708, "rank": 1, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 15.0%, 85.0%)"}, {"name": "Amazon", "full_name": "Amazon", "beneficiaries": 13058, "rank": 2, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 15.5%, 84.16666666666667%)"}, {"name": "Infosys", "full_name": "Infosys", "beneficiaries": 9722, "rank": 3, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(270, 16.0%, 83.33333333333333%)"}, {"name": "Microsoft", "full_name": "Microsoft", "beneficiaries": 6972, "rank": 4, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(140, 16.5%, 82.5%)"}, {"name": "Google", "full_name": "Google", "beneficiaries": 5761, "rank": 5, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 17.0%, 81.66666666666667%)"}, {"name": "Deloitte", "full_name": "Deloitte", "beneficiaries": 4708, "rank": 6, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(140, 17.5%, 80.83333333333333%)"}, {"name": "Capgemini", "full_name": "Capgemini", "beneficiaries": 4622, "rank": 7, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(270, 18.0%, 80.0%)"}, {"name": "Meta", "full_name": "Meta", "beneficiaries": 4355, "rank": 8, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 18.5%, 79.16666666666667%)"}, {"name": "HCL", "full_name": "HCL", "beneficiaries": 4081, "rank": 9, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 8, "brand_color": "hsl(270, 19.0%, 78.33333333333333%)"}, {"name": "Accenture", "full_name": "Accenture", "beneficiaries": 4016, "rank": 10, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 19.5%, 77.5%)"}, {"name": "Apple", "full_name": "Apple", "beneficiaries": 3869, "rank": 11, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(140, 20.0%, 76.66666666666667%)"}, {"name": "IBM", "full_name": "IBM", "beneficiaries": 3124, "rank": 12, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 20.5%, 75.83333333333333%)"}, {"name": "EY", "full_name": "EY", "beneficiaries": 2797, "rank": 13, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 21.0%, 75.0%)"}, {"name": "Intel", "full_name": "Intel", "beneficiaries": 2358, "rank": 14, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(140, 21.5%, 74.16666666666667%)"}, {"name": "JPMorgan Chase", "full_name": "JPMorgan Chase", "beneficiaries": 2305, "rank": 15, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 8, "brand_color": "hsl(140, 22.0%, 73.33333333333333%)"}, {"name": "Oracle", "full_name": "Oracle", "beneficiaries": 2066, "rank": 16, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 4, "brand_color": "hsl(140, 22.5%, 72.5%)"}, {"name": "PwC", "full_name": "PwC", "beneficiaries": 1999, "rank": 17, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 4, "brand_color": "hsl(140, 23.0%, 71.66666666666667%)"}, {"name": "Cisco", "full_name": "Cisco", "beneficiaries": 1977, "rank": 18, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 23.5%, 70.83333333333333%)"}, {"name": "Mphasis", "full_name": "Mphasis", "beneficiaries": 1511, "rank": 19, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(270, 24.0%, 70.0%)"}, {"name": "Syntel", "full_name": "Syntel", "beneficiaries": 1459, "rank": 20, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 7, "brand_color": "hsl(270, 24.5%, 69.16666666666667%)"}, {"name": "L&T Infotech", "full_name": "L&T Infotech", "beneficiaries": 1422, "rank": 21, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(270, 25.0%, 68.33333333333334%)"}, {"name": "Compunnel", "full_name": "Compunnel", "beneficiaries": 1338, "rank": 22, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 25.5%, 67.5%)"}, {"name": "Mindtree", "full_name": "Mindtree", "beneficiaries": 1150, "rank": 23, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 7, "brand_color": "hsl(270, 26.0%, 66.66666666666667%)"}, {"name": "Hexaware", "full_name": "Hexaware", "beneficiaries": 1013, "rank": 24, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 26.5%, 65.83333333333333%)"}, {"name": "LinkedIn", "full_name": "LinkedIn", "beneficiaries": 878, "rank": 25, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 27.0%, 65.0%)"}, {"name": "CGI", "full_name": "CGI", "beneficiaries": 866, "rank": 26, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 27.5%, 64.16666666666666%)"}, {"name": "L&T Technology Services", "full_name": "L&T Technology Services", "beneficiaries": 859, "rank": 27, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 28.0%, 63.33333333333333%)"}, {"name": "NVIDIA", "full_name": "NVIDIA", "beneficiaries": 762, "rank": 28, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 28.5%, 62.5%)"}, {"name": "PayPal", "full_name": "PayPal", "beneficiaries": 737, "rank": 29, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 29.0%, 61.66666666666667%)"}, {"name": "Cummins", "full_name": "Cummins", "beneficiaries": 696, "rank": 30, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 29.5%, 60.83333333333333%)"}], 2021: [{"name": "AWS", "full_name": "AMAZON WEB SERVICES INC", "beneficiaries": 15003, "rank": 1, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 15.0%, 85.0%)"}, {"name": "TCS", "full_name": "TATA CONSULTANCY SERVICES LIMITED", "beneficiaries": 10497, "rank": 2, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 15.5%, 84.16666666666667%)"}, {"name": "Infosys", "full_name": "INFOSYS LIMITED", "beneficiaries": 8857, "rank": 3, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 16.0%, 83.33333333333333%)"}, {"name": "Cognizant", "full_name": "COGNIZANT TECHNOLOGY SOLUTIONS US CORP", "beneficiaries": 8794, "rank": 4, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(270, 16.5%, 82.5%)"}, {"name": "Microsoft", "full_name": "MICROSOFT CORPORATION", "beneficiaries": 6439, "rank": 5, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 17.0%, 81.66666666666667%)"}, {"name": "Google", "full_name": "GOOGLE LLC", "beneficiaries": 6421, "rank": 6, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 17.5%, 80.83333333333333%)"}, {"name": "Meta", "full_name": "META PLATFORMS INC", "beneficiaries": 5060, "rank": 7, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 18.0%, 80.0%)"}, {"name": "Apple", "full_name": "APPLE INC", "beneficiaries": 4717, "rank": 8, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(140, 18.5%, 79.16666666666667%)"}, {"name": "Deloitte", "full_name": "DELOITTE CONSULTING LLP", "beneficiaries": 4266, "rank": 9, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(140, 19.0%, 78.33333333333333%)"}, {"name": "Wipro", "full_name": "WIPRO LIMITED", "beneficiaries": 2928, "rank": 10, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 19.5%, 77.5%)"}, {"name": "HCL", "full_name": "HCL AMERICA INC", "beneficiaries": 2910, "rank": 11, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(270, 20.0%, 76.66666666666667%)"}, {"name": "Capgemini", "full_name": "CAPGEMINI AMERICA INC", "beneficiaries": 2859, "rank": 12, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 5, "brand_color": "hsl(270, 20.5%, 75.83333333333333%)"}, {"name": "IBM", "full_name": "IBM CORPORATION", "beneficiaries": 2666, "rank": 13, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 21.0%, 75.0%)"}, {"name": "Accenture", "full_name": "ACCENTURE LLP", "beneficiaries": 2557, "rank": 14, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 4, "brand_color": "hsl(140, 21.5%, 74.16666666666667%)"}, {"name": "JPMorgan Chase", "full_name": "JPMORGAN CHASE AND CO", "beneficiaries": 2432, "rank": 15, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 22.0%, 73.33333333333333%)"}, {"name": "EY", "full_name": "ERNST AND YOUNG U S LLP", "beneficiaries": 2298, "rank": 16, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(140, 22.5%, 72.5%)"}, {"name": "Intel", "full_name": "INTEL CORPORATION", "beneficiaries": 2100, "rank": 17, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(140, 23.0%, 71.66666666666667%)"}, {"name": "Walmart", "full_name": "WAL-MART ASSOCIATES INC", "beneficiaries": 1931, "rank": 18, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 23.5%, 70.83333333333333%)"}, {"name": "Cisco", "full_name": "CISCO SYSTEMS INC", "beneficiaries": 1819, "rank": 19, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 24.0%, 70.0%)"}, {"name": "Tech Mahindra", "full_name": "TECH MAHINDRA AMERICAS INC", "beneficiaries": 1716, "rank": 20, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 24.5%, 69.16666666666667%)"}, {"name": "Salesforce", "full_name": "SALESFORCE INC", "beneficiaries": 1634, "rank": 21, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 25.0%, 68.33333333333334%)"}, {"name": "Oracle", "full_name": "ORACLE AMERICA INC", "beneficiaries": 1552, "rank": 22, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 6, "brand_color": "hsl(140, 25.5%, 67.5%)"}, {"name": "Compunnel", "full_name": "COMPUNEL INC", "beneficiaries": 1338, "rank": 23, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 26.0%, 66.66666666666667%)"}, {"name": "Qualcomm", "full_name": "QUALCOMM TECHNOLOGIES INC", "beneficiaries": 1253, "rank": 24, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 26.5%, 65.83333333333333%)"}, {"name": "Syntel", "full_name": "SYNTEL INC", "beneficiaries": 1178, "rank": 25, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 5, "brand_color": "hsl(270, 27.0%, 65.0%)"}, {"name": "L&T Infotech", "full_name": "LARSEN AND TOUBRO INFOTECH LIMITED", "beneficiaries": 1154, "rank": 26, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 5, "brand_color": "hsl(270, 27.5%, 64.16666666666666%)"}, {"name": "NVIDIA", "full_name": "NVIDIA CORPORATION", "beneficiaries": 1011, "rank": 27, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 28.0%, 63.33333333333333%)"}, {"name": "Fidelity", "full_name": "FIDELITY TECHNOLOGY GROUP LLC D B A FIDELITY INVESTMENTS", "beneficiaries": 1006, "rank": 28, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 28.5%, 62.5%)"}, {"name": "LinkedIn", "full_name": "LINKEDIN CORPORATION", "beneficiaries": 982, "rank": 29, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 4, "brand_color": "hsl(140, 29.0%, 61.66666666666667%)"}, {"name": "Randstad", "full_name": "RANDSTAD US LP", "beneficiaries": 969, "rank": 30, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 29.5%, 60.83333333333333%)"}], 2022: [{"name": "Amazon", "full_name": "AMAZON", "beneficiaries": 14434, "rank": 1, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 15.0%, 85.0%)"}, {"name": "TCS", "full_name": "TATA CONSULTANCY SERVICES LIMITED", "beneficiaries": 9943, "rank": 2, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 15.5%, 84.16666666666667%)"}, {"name": "Google", "full_name": "GOOGLE LLC", "beneficiaries": 8378, "rank": 3, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(140, 16.0%, 83.33333333333333%)"}, {"name": "Microsoft", "full_name": "MICROSOFT CORPORATION", "beneficiaries": 7174, "rank": 4, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 16.5%, 82.5%)"}, {"name": "Infosys", "full_name": "INFOSYS LIMITED", "beneficiaries": 7071, "rank": 5, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(270, 17.0%, 81.66666666666667%)"}, {"name": "Meta", "full_name": "META PLATFORMS INC", "beneficiaries": 6177, "rank": 6, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 17.5%, 80.83333333333333%)"}, {"name": "Cognizant", "full_name": "COGNIZANT TECHNOLOGY SOLUTIONS US CORP", "beneficiaries": 5784, "rank": 7, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(270, 18.0%, 80.0%)"}, {"name": "Apple", "full_name": "APPLE INC", "beneficiaries": 5020, "rank": 8, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 18.5%, 79.16666666666667%)"}, {"name": "Deloitte", "full_name": "DELOITTE CONSULTING LLP", "beneficiaries": 4226, "rank": 9, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 19.0%, 78.33333333333333%)"}, {"name": "Intel", "full_name": "INTEL CORPORATION", "beneficiaries": 3532, "rank": 10, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 7, "brand_color": "hsl(140, 19.5%, 77.5%)"}, {"name": "JPMorgan Chase", "full_name": "JPMORGAN CHASE AND CO", "beneficiaries": 3113, "rank": 11, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 4, "brand_color": "hsl(140, 20.0%, 76.66666666666667%)"}, {"name": "IBM", "full_name": "IBM CORPORATION", "beneficiaries": 3053, "rank": 12, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 20.5%, 75.83333333333333%)"}, {"name": "Capgemini", "full_name": "CAPGEMINI AMERICA INC", "beneficiaries": 3004, "rank": 13, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(270, 21.0%, 75.0%)"}, {"name": "EY", "full_name": "ERNST AND YOUNG U S LLP", "beneficiaries": 3000, "rank": 14, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(140, 21.5%, 74.16666666666667%)"}, {"name": "HCL", "full_name": "HCL AMERICA INC", "beneficiaries": 2960, "rank": 15, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 4, "brand_color": "hsl(270, 22.0%, 73.33333333333333%)"}, {"name": "Oracle", "full_name": "ORACLE AMERICA INC", "beneficiaries": 2700, "rank": 16, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 6, "brand_color": "hsl(140, 22.5%, 72.5%)"}, {"name": "Walmart", "full_name": "WAL-MART ASSOCIATES INC", "beneficiaries": 2638, "rank": 17, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 23.0%, 71.66666666666667%)"}, {"name": "Cisco", "full_name": "CISCO SYSTEMS INC", "beneficiaries": 2537, "rank": 18, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 23.5%, 70.83333333333333%)"}, {"name": "Salesforce", "full_name": "SALESFORCE INC", "beneficiaries": 2230, "rank": 19, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(140, 24.0%, 70.0%)"}, {"name": "Wipro", "full_name": "WIPRO LIMITED", "beneficiaries": 2122, "rank": 20, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 10, "brand_color": "hsl(270, 24.5%, 69.16666666666667%)"}, {"name": "Accenture", "full_name": "ACCENTURE LLP", "beneficiaries": 2094, "rank": 21, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 7, "brand_color": "hsl(140, 25.0%, 68.33333333333334%)"}, {"name": "Qualcomm", "full_name": "QUALCOMM TECHNOLOGIES INC", "beneficiaries": 1448, "rank": 22, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(140, 25.5%, 67.5%)"}, {"name": "Fidelity", "full_name": "FIDELITY TECHNOLOGY GROUP LLC D B A FIDELITY INVESTMENTS", "beneficiaries": 1395, "rank": 23, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 26.0%, 66.66666666666667%)"}, {"name": "LinkedIn", "full_name": "LINKEDIN CORPORATION", "beneficiaries": 1377, "rank": 24, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 26.5%, 65.83333333333333%)"}, {"name": "L&T Infotech", "full_name": "LARSEN AND TOUBRO INFOTECH LIMITED", "beneficiaries": 1346, "rank": 25, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(270, 27.0%, 65.0%)"}, {"name": "Compunnel", "full_name": "COMPUNEL INC", "beneficiaries": 1309, "rank": 26, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(140, 27.5%, 64.16666666666666%)"}, {"name": "Tech Mahindra", "full_name": "TECH MAHINDRA AMERICAS INC", "beneficiaries": 1156, "rank": 27, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 7, "brand_color": "hsl(270, 28.0%, 63.33333333333333%)"}, {"name": "NVIDIA", "full_name": "NVIDIA CORPORATION", "beneficiaries": 1122, "rank": 28, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 28.5%, 62.5%)"}, {"name": "PwC", "full_name": "PRICEWATERHOUSECOOPERS LLP", "beneficiaries": 1099, "rank": 29, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 29.0%, 61.66666666666667%)"}, {"name": "Uber", "full_name": "UBER TECHNOLOGIES INC", "beneficiaries": 1060, "rank": 30, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 29.5%, 60.83333333333333%)"}], 2023: [{"name": "Amazon", "full_name": "AMAZON", "beneficiaries": 14044, "rank": 1, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 15.0%, 85.0%)"}, {"name": "Cognizant", "full_name": "COGNIZANT TECHNOLOGY SOLUTIONS US CORP", "beneficiaries": 7556, "rank": 2, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(270, 15.5%, 84.16666666666667%)"}, {"name": "Infosys", "full_name": "INFOSYS LIMITED", "beneficiaries": 7050, "rank": 3, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(270, 16.0%, 83.33333333333333%)"}, {"name": "TCS", "full_name": "TATA CONSULTANCY SERVICES LIMITED", "beneficiaries": 6843, "rank": 4, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(270, 16.5%, 82.5%)"}, {"name": "Google", "full_name": "GOOGLE LLC", "beneficiaries": 5407, "rank": 5, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(140, 17.0%, 81.66666666666667%)"}, {"name": "Microsoft", "full_name": "MICROSOFT CORPORATION", "beneficiaries": 4752, "rank": 6, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(140, 17.5%, 80.83333333333333%)"}, {"name": "Apple", "full_name": "APPLE INC", "beneficiaries": 3760, "rank": 7, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 18.0%, 80.0%)"}, {"name": "Deloitte", "full_name": "DELOITTE CONSULTING LLP", "beneficiaries": 3340, "rank": 8, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 18.5%, 79.16666666666667%)"}, {"name": "Meta", "full_name": "META PLATFORMS INC", "beneficiaries": 3311, "rank": 9, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(140, 19.0%, 78.33333333333333%)"}, {"name": "JPMorgan Chase", "full_name": "JPMORGAN CHASE AND CO", "beneficiaries": 3038, "rank": 10, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 19.5%, 77.5%)"}, {"name": "Capgemini", "full_name": "CAPGEMINI AMERICA INC", "beneficiaries": 2744, "rank": 11, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(270, 20.0%, 76.66666666666667%)"}, {"name": "HCL", "full_name": "HCL AMERICA INC", "beneficiaries": 2681, "rank": 12, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(270, 20.5%, 75.83333333333333%)"}, {"name": "Walmart", "full_name": "WAL-MART ASSOCIATES INC", "beneficiaries": 2486, "rank": 13, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 4, "brand_color": "hsl(140, 21.0%, 75.0%)"}, {"name": "EY", "full_name": "ERNST AND YOUNG U S LLP", "beneficiaries": 2485, "rank": 14, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 21.5%, 74.16666666666667%)"}, {"name": "IBM", "full_name": "IBM CORPORATION", "beneficiaries": 2423, "rank": 15, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(140, 22.0%, 73.33333333333333%)"}, {"name": "Wipro", "full_name": "WIPRO LIMITED", "beneficiaries": 2285, "rank": 16, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 4, "brand_color": "hsl(270, 22.5%, 72.5%)"}, {"name": "Oracle", "full_name": "ORACLE AMERICA INC", "beneficiaries": 2102, "rank": 17, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 23.0%, 71.66666666666667%)"}, {"name": "Intel", "full_name": "INTEL CORPORATION", "beneficiaries": 2079, "rank": 18, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 8, "brand_color": "hsl(140, 23.5%, 70.83333333333333%)"}, {"name": "Accenture", "full_name": "ACCENTURE LLP", "beneficiaries": 1866, "rank": 19, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(140, 24.0%, 70.0%)"}, {"name": "Cisco", "full_name": "CISCO SYSTEMS INC", "beneficiaries": 1462, "rank": 20, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(140, 24.5%, 69.16666666666667%)"}, {"name": "LTIMindtree", "full_name": "LTIMINDTREE LIMITED", "beneficiaries": 1349, "rank": 21, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 25.0%, 68.33333333333334%)"}, {"name": "Tech Mahindra", "full_name": "TECH MAHINDRA AMERICAS INC", "beneficiaries": 1297, "rank": 22, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(270, 25.5%, 67.5%)"}, {"name": "Fidelity", "full_name": "FIDELITY TECHNOLOGY GROUP LLC D B A FIDELITY INVESTMENTS", "beneficiaries": 1290, "rank": 23, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 26.0%, 66.66666666666667%)"}, {"name": "Compunnel", "full_name": "COMPUNEL INC", "beneficiaries": 1287, "rank": 24, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(140, 26.5%, 65.83333333333333%)"}, {"name": "Qualcomm", "full_name": "QUALCOMM TECHNOLOGIES INC", "beneficiaries": 1213, "rank": 25, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(140, 27.0%, 65.0%)"}, {"name": "Citibank", "full_name": "CITIBANK N A", "beneficiaries": 1091, "rank": 26, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 27.5%, 64.16666666666666%)"}, {"name": "Tesla", "full_name": "TESLA INC", "beneficiaries": 1080, "rank": 27, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 28.0%, 63.33333333333333%)"}, {"name": "Salesforce", "full_name": "SALESFORCE INC", "beneficiaries": 1007, "rank": 28, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 9, "brand_color": "hsl(140, 28.5%, 62.5%)"}, {"name": "NVIDIA", "full_name": "NVIDIA CORPORATION", "beneficiaries": 985, "rank": 29, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 29.0%, 61.66666666666667%)"}, {"name": "Mphasis", "full_name": "MPHASIS LIMITED", "beneficiaries": 811, "rank": 30, "is_icc": true, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(270, 29.5%, 60.83333333333333%)"}], 2024: [{"name": "Amazon", "full_name": "AMAZON", "beneficiaries": 13114, "rank": 1, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 15.0%, 85.0%)"}, {"name": "Infosys", "full_name": "INFOSYS LIMITED", "beneficiaries": 7832, "rank": 2, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(270, 15.5%, 84.16666666666667%)"}, {"name": "TCS", "full_name": "TATA CONSULTANCY SERVICES LIMITED", "beneficiaries": 7442, "rank": 3, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(270, 16.0%, 83.33333333333333%)"}, {"name": "Cognizant", "full_name": "COGNIZANT TECHNOLOGY SOLUTIONS US CORP", "beneficiaries": 6987, "rank": 4, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(270, 16.5%, 82.5%)"}, {"name": "Google", "full_name": "GOOGLE LLC", "beneficiaries": 5319, "rank": 5, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 17.0%, 81.66666666666667%)"}, {"name": "Meta", "full_name": "META PLATFORMS INC", "beneficiaries": 4775, "rank": 6, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(140, 17.5%, 80.83333333333333%)"}, {"name": "Microsoft", "full_name": "MICROSOFT CORPORATION", "beneficiaries": 4707, "rank": 7, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 18.0%, 80.0%)"}, {"name": "Apple", "full_name": "APPLE INC", "beneficiaries": 3860, "rank": 8, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 18.5%, 79.16666666666667%)"}, {"name": "HCL", "full_name": "HCL AMERICA INC", "beneficiaries": 2907, "rank": 9, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(270, 19.0%, 78.33333333333333%)"}, {"name": "Walmart", "full_name": "WAL-MART ASSOCIATES INC", "beneficiaries": 2898, "rank": 10, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(140, 19.5%, 77.5%)"}, {"name": "IBM", "full_name": "IBM CORPORATION", "beneficiaries": 2878, "rank": 11, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 4, "brand_color": "hsl(140, 20.0%, 76.66666666666667%)"}, {"name": "Capgemini", "full_name": "CAPGEMINI AMERICA INC", "beneficiaries": 2736, "rank": 12, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 20.5%, 75.83333333333333%)"}, {"name": "Intel", "full_name": "INTEL CORPORATION", "beneficiaries": 2515, "rank": 13, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 21.0%, 75.0%)"}, {"name": "Deloitte", "full_name": "DELOITTE CONSULTING LLP", "beneficiaries": 2465, "rank": 14, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 6, "brand_color": "hsl(140, 21.5%, 74.16666666666667%)"}, {"name": "EY", "full_name": "ERNST AND YOUNG U S LLP", "beneficiaries": 2308, "rank": 15, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(140, 22.0%, 73.33333333333333%)"}, {"name": "Accenture", "full_name": "ACCENTURE LLP", "beneficiaries": 2112, "rank": 16, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(140, 22.5%, 72.5%)"}, {"name": "Oracle", "full_name": "ORACLE AMERICA INC", "beneficiaries": 2051, "rank": 17, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 23.0%, 71.66666666666667%)"}, {"name": "LTIMindtree", "full_name": "LTIMINDTREE LIMITED", "beneficiaries": 2027, "rank": 18, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 3, "brand_color": "hsl(270, 23.5%, 70.83333333333333%)"}, {"name": "Tesla", "full_name": "TESLA INC", "beneficiaries": 1750, "rank": 19, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 8, "brand_color": "hsl(140, 24.0%, 70.0%)"}, {"name": "JPMorgan Chase", "full_name": "JPMORGAN CHASE AND CO", "beneficiaries": 1670, "rank": 20, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 10, "brand_color": "hsl(140, 24.5%, 69.16666666666667%)"}, {"name": "Fidelity", "full_name": "FIDELITY TECHNOLOGY GROUP LLC D B A FIDELITY INVESTMENTS", "beneficiaries": 1588, "rank": 21, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(140, 25.0%, 68.33333333333334%)"}, {"name": "Wipro", "full_name": "WIPRO LIMITED", "beneficiaries": 1571, "rank": 22, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 6, "brand_color": "hsl(270, 25.5%, 67.5%)"}, {"name": "Salesforce", "full_name": "SALESFORCE INC", "beneficiaries": 1517, "rank": 23, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 26.0%, 66.66666666666667%)"}, {"name": "NVIDIA", "full_name": "NVIDIA CORPORATION", "beneficiaries": 1502, "rank": 24, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 26.5%, 65.83333333333333%)"}, {"name": "Cisco", "full_name": "CISCO SYSTEMS INC", "beneficiaries": 1319, "rank": 25, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 5, "brand_color": "hsl(140, 27.0%, 65.0%)"}, {"name": "Tech Mahindra", "full_name": "TECH MAHINDRA AMERICAS INC", "beneficiaries": 1184, "rank": 26, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 4, "brand_color": "hsl(270, 27.5%, 64.16666666666666%)"}, {"name": "Qualcomm", "full_name": "QUALCOMM TECHNOLOGIES INC", "beneficiaries": 1119, "rank": 27, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 2, "brand_color": "hsl(140, 28.0%, 63.33333333333333%)"}, {"name": "Compunnel", "full_name": "COMPUNEL INC", "beneficiaries": 998, "rank": 28, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 4, "brand_color": "hsl(140, 28.5%, 62.5%)"}, {"name": "LinkedIn", "full_name": "LINKEDIN CORPORATION", "beneficiaries": 964, "rank": 29, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 29.0%, 61.66666666666667%)"}, {"name": "Citibank", "full_name": "CITIBANK N A", "beneficiaries": 850, "rank": 30, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 4, "brand_color": "hsl(140, 29.5%, 60.83333333333333%)"}], 2025: [{"name": "Amazon", "full_name": "AMAZON", "beneficiaries": 16834, "rank": 1, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 15.0%, 85.0%)"}, {"name": "Meta", "full_name": "META PLATFORMS INC", "beneficiaries": 6276, "rank": 2, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 4, "brand_color": "hsl(140, 15.5%, 84.16666666666667%)"}, {"name": "Microsoft", "full_name": "MICROSOFT CORPORATION", "beneficiaries": 6241, "rank": 3, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 4, "brand_color": "hsl(140, 16.0%, 83.33333333333333%)"}, {"name": "TCS", "full_name": "TATA CONSULTANCY SERVICES LIMITED", "beneficiaries": 6021, "rank": 4, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(270, 16.5%, 82.5%)"}, {"name": "Google", "full_name": "GOOGLE LLC", "beneficiaries": 5436, "rank": 5, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 17.0%, 81.66666666666667%)"}, {"name": "Apple", "full_name": "APPLE INC", "beneficiaries": 5360, "rank": 6, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(140, 17.5%, 80.83333333333333%)"}, {"name": "Cognizant", "full_name": "COGNIZANT TECHNOLOGY SOLUTIONS US CORP", "beneficiaries": 3843, "rank": 7, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(270, 18.0%, 80.0%)"}, {"name": "Walmart", "full_name": "WAL-MART ASSOCIATES INC", "beneficiaries": 3224, "rank": 8, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(140, 18.5%, 79.16666666666667%)"}, {"name": "Deloitte", "full_name": "DELOITTE CONSULTING LLP", "beneficiaries": 2946, "rank": 9, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 19.0%, 78.33333333333333%)"}, {"name": "JPMorgan Chase", "full_name": "JPMORGAN CHASE AND CO", "beneficiaries": 2927, "rank": 10, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 10, "brand_color": "hsl(140, 19.5%, 77.5%)"}, {"name": "Infosys", "full_name": "INFOSYS LIMITED", "beneficiaries": 2848, "rank": 11, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 9, "brand_color": "hsl(270, 20.0%, 76.66666666666667%)"}, {"name": "Oracle", "full_name": "ORACLE AMERICA INC", "beneficiaries": 2659, "rank": 12, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 20.5%, 75.83333333333333%)"}, {"name": "EY", "full_name": "ERNST AND YOUNG U S LLP", "beneficiaries": 2255, "rank": 13, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 2, "brand_color": "hsl(140, 21.0%, 75.0%)"}, {"name": "HCL", "full_name": "HCL AMERICA INC", "beneficiaries": 2188, "rank": 14, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 5, "brand_color": "hsl(270, 21.5%, 74.16666666666667%)"}, {"name": "Capgemini", "full_name": "CAPGEMINI AMERICA INC", "beneficiaries": 2153, "rank": 15, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(140, 22.0%, 73.33333333333333%)"}, {"name": "Intel", "full_name": "INTEL CORPORATION", "beneficiaries": 2040, "rank": 16, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(140, 22.5%, 72.5%)"}, {"name": "Cisco", "full_name": "CISCO SYSTEMS INC", "beneficiaries": 1987, "rank": 17, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 8, "brand_color": "hsl(140, 23.0%, 71.66666666666667%)"}, {"name": "IBM", "full_name": "IBM CORPORATION", "beneficiaries": 1899, "rank": 18, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 7, "brand_color": "hsl(140, 23.5%, 70.83333333333333%)"}, {"name": "Accenture", "full_name": "ACCENTURE LLP", "beneficiaries": 1814, "rank": 19, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 3, "brand_color": "hsl(140, 24.0%, 70.0%)"}, {"name": "NVIDIA", "full_name": "NVIDIA CORPORATION", "beneficiaries": 1759, "rank": 20, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 4, "brand_color": "hsl(140, 24.5%, 69.16666666666667%)"}, {"name": "Wipro", "full_name": "WIPRO LIMITED", "beneficiaries": 1665, "rank": 21, "is_icc": true, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(270, 25.0%, 68.33333333333334%)"}, {"name": "Fidelity Investments", "full_name": "FIDELITY TECHNOLOGY GROUP LLC D B A FIDELITY INVESTMENTS", "beneficiaries": 1574, "rank": 22, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 25.5%, 67.5%)"}, {"name": "Salesforce", "full_name": "SALESFORCE INC", "beneficiaries": 1530, "rank": 23, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 26.0%, 66.66666666666667%)"}, {"name": "LTIMindtree", "full_name": "LTIMINDTREE LIMITED", "beneficiaries": 1328, "rank": 24, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 6, "brand_color": "hsl(270, 26.5%, 65.83333333333333%)"}, {"name": "Citibank", "full_name": "CITIBANK N A", "beneficiaries": 1244, "rank": 25, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 5, "brand_color": "hsl(140, 27.0%, 65.0%)"}, {"name": "Qualcomm", "full_name": "QUALCOMM TECHNOLOGIES INC", "beneficiaries": 1133, "rank": 26, "is_icc": false, "rank_change_direction": "up", "rank_change_value": 1, "brand_color": "hsl(140, 27.5%, 64.16666666666666%)"}, {"name": "Tech Mahindra", "full_name": "TECH MAHINDRA AMERICAS INC", "beneficiaries": 1099, "rank": 27, "is_icc": true, "rank_change_direction": "down", "rank_change_value": 1, "brand_color": "hsl(270, 28.0%, 63.33333333333333%)"}, {"name": "Tesla", "full_name": "TESLA INC", "beneficiaries": 1076, "rank": 28, "is_icc": false, "rank_change_direction": "down", "rank_change_value": 9, "brand_color": "hsl(140, 28.5%, 62.5%)"}, {"name": "Goldman Sachs", "full_name": "GOLDMAN SACHS AND CO LLC", "beneficiaries": 1041, "rank": 29, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 29.0%, 61.66666666666667%)"}, {"name": "PayPal", "full_name": "PAYPAL INC", "beneficiaries": 942, "rank": 30, "is_icc": false, "rank_change_direction": null, "rank_change_value": null, "brand_color": "hsl(140, 29.5%, 60.83333333333333%)"}]
+        };
+        
+        // 所有年份的统计数据
+        const allYearsStats = {
+            2016: {count: 28, total: 104520, icc_count: 13}, 2017: {count: 30, total: 130628, icc_count: 14}, 2018: {count: 30, total: 81540, icc_count: 11}, 2019: {count: 30, total: 100825, icc_count: 11}, 2020: {count: 30, total: 105189, icc_count: 10}, 2021: {count: 30, total: 108347, icc_count: 9}, 2022: {count: 30, total: 112502, icc_count: 8}, 2023: {count: 30, total: 93124, icc_count: 9}, 2024: {count: 30, total: 94965, icc_count: 7}, 2025: {count: 30, total: 93342, icc_count: 7}
+        };
+        
+        const availableYears = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+        let currentYear = 2025;
+        let currentCompanies = allYearsData[currentYear] || [];
+        
+        // 初始化：默认显示最新年份
+        if (currentYear !== null) {
+            document.getElementById(`year-${currentYear}`).classList.add('active');
+        }
+        
+        // 切换年份函数
+        function switchYear(year) {
+            if (!allYearsData[year]) return;
+            
+            currentYear = year;
+            currentCompanies = allYearsData[year];
+            
+            // 更新按钮状态
+            document.querySelectorAll('.year-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`year-${year}`).classList.add('active');
+            
+            // 更新统计数据
+            const stats = allYearsStats[year];
+            if (stats) {
+                updateStats(stats.count, stats.total, stats.icc_count);
+            }
+            
+            updateTreemap();
+        }
+        
+        // 更新统计数据
+        function updateStats(count, total, iccCount) {
+            document.getElementById('stat-count').textContent = count;
+            document.getElementById('stat-total').textContent = total.toLocaleString();
+            document.getElementById('stat-icc').textContent = iccCount;
+        }
+        
+        // 更新热力图
+        function updateTreemap() {
+            // 清除现有内容
+            d3.select('#treemap').selectAll('*').remove();
+            
+            // 重新创建热力图
+            createTreemap();
+        }
+        
+        // 创建热力图函数
+        function createTreemap() {
+            const companies = currentCompanies;
         
         // Convert hex color to RGB
         function hexToRgb(hex) {
@@ -253,90 +559,448 @@
             return '#000';
         }
         
-        // Create treemap
-        const treemapContainer = d3.select('#treemap');
-        const width = treemapContainer.node().offsetWidth;
-        const height = 800;
-        
-        // Prepare data for D3 treemap
-        const root = d3.hierarchy({children: companies})
-            .sum(d => d.beneficiaries)
-            .sort((a, b) => b.value - a.value);
-        
-        // Create treemap layout
-        const treemap = d3.treemap()
-            .size([width, height])
-            .padding(2)
-            .round(true);
-        
-        treemap(root);
-        
-        // Create cells
-        const cells = treemapContainer.selectAll('.treemap-cell')
-            .data(root.leaves())
-            .enter()
-            .append('div')
-            .attr('class', d => `treemap-cell ${d.data.is_icc ? 'icc' : ''}`)
-            .style('left', d => d.x0 + 'px')
-            .style('top', d => d.y0 + 'px')
-            .style('width', d => (d.x1 - d.x0) + 'px')
-            .style('height', d => (d.y1 - d.y0) + 'px')
-            .style('background-color', d => d.data.brand_color)
-            .style('color', d => getTextColor(d.data.brand_color))
-            .on('mouseenter', function(event, d) {
-                const tooltip = d3.select('#tooltip');
-                tooltip.html(`
-                    <strong>${d.data.name}</strong><br>
-                    ${d.data.full_name}<br>
-                    Rank: #${d.data.rank}<br>
-                    Beneficiaries: ${d.data.beneficiaries.toLocaleString()}
-                `);
-                tooltip.classed('show', true);
-            })
-            .on('mouseleave', function() {
-                d3.select('#tooltip').classed('show', false);
-            })
-            .on('mousemove', function(event) {
-                const tooltip = d3.select('#tooltip');
-                tooltip.style('left', (event.pageX - tooltip.node().offsetWidth / 2) + 'px')
-                       .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px');
+            // Create treemap
+            const treemapContainer = d3.select('#treemap');
+            const width = treemapContainer.node().offsetWidth;
+            const height = 800;
+            
+            // Prepare data for D3 treemap
+            const root = d3.hierarchy({children: companies})
+                .sum(d => d.beneficiaries)
+                .sort((a, b) => b.value - a.value);
+            
+            // Create treemap layout
+            const treemap = d3.treemap()
+                .size([width, height])
+                .padding(2)
+                .round(true);
+            
+            treemap(root);
+            
+            // Create cells
+            const cells = treemapContainer.selectAll('.treemap-cell')
+                .data(root.leaves())
+                .enter()
+                .append('div')
+                .attr('class', d => `treemap-cell ${d.data.is_icc ? 'icc' : ''}`)
+                .style('left', d => d.x0 + 'px')
+                .style('top', d => d.y0 + 'px')
+                .style('width', d => (d.x1 - d.x0) + 'px')
+                .style('height', d => (d.y1 - d.y0) + 'px')
+                .style('background-color', d => d.data.brand_color)
+                .style('color', '#000')
+                .on('mouseenter', function(event, d) {
+                    const tooltip = d3.select('#tooltip');
+                    tooltip.html(`
+                        <strong>${d.data.name}</strong><br>
+                        ${d.data.full_name}<br>
+                        Rank: #${d.data.rank}<br>
+                        Beneficiaries: ${d.data.beneficiaries.toLocaleString()}
+                    `);
+                    tooltip.classed('show', true);
+                })
+                .on('mouseleave', function() {
+                    d3.select('#tooltip').classed('show', false);
+                })
+                .on('mousemove', function(event) {
+                    const tooltip = d3.select('#tooltip');
+                    // 使用clientX/clientY，因为tooltip是fixed定位，相对于视口
+                    // 让tooltip紧贴光标
+                    const offset = 8;
+                    tooltip.style('left', (event.clientX + offset) + 'px')
+                           .style('top', (event.clientY + offset) + 'px');
+                })
+                .on('click', function(event, d) {
+                    showCompanyDetail(d.data.name);
+                });
+            
+            // Company name to domain mapping for logos
+            const companyDomains = {
+                'Amazon': 'amazon.com',
+                'Meta': 'meta.com',
+                'Microsoft': 'microsoft.com',
+                'TCS': 'tcs.com',
+                'Google': 'google.com',
+                'Apple': 'apple.com',
+                'Cognizant': 'cognizant.com',
+                'Walmart': 'walmart.com',
+                'Deloitte': 'deloitte.com',
+                'JPMorgan Chase': 'jpmorgan.com',
+                'Infosys': 'infosys.com',
+                'Oracle': 'oracle.com',
+                'EY': 'ey.com',
+                'HCL': 'hcl.com',
+                'Capgemini': 'capgemini.com',
+                'Intel': 'intel.com',
+                'Cisco': 'cisco.com',
+                'IBM': 'ibm.com',
+                'Accenture': 'accenture.com',
+                'NVIDIA': 'nvidia.com',
+                'Wipro': 'wipro.com',
+                'Fidelity': 'fidelity.com',
+                'Fidelity Investments': 'fidelity.com',
+                'Salesforce': 'salesforce.com',
+                'LTIMindtree': 'ltimindtree.com',
+                'Citibank': 'citi.com',
+                'Qualcomm': 'qualcomm.com',
+                'Tech Mahindra': 'techmahindra.com',
+                'Tesla': 'tesla.com',
+                'Goldman Sachs': 'goldmansachs.com',
+                'PayPal': 'paypal.com',
+                'Compunnel': 'compunnel.com',
+                'LinkedIn': 'linkedin.com',
+                'L&T Infotech': 'lntinfotech.com',
+                'PwC': 'pwc.com',
+                'Uber': 'uber.com',
+                'AWS': 'amazon.com',
+                'Syntel': 'syntelinc.com',
+                'Randstad': 'randstad.com',
+                'CGI': 'cgi.com',
+                'Cummins': 'cummins.com',
+                'Hexaware': 'hexaware.com',
+                'L&T Technology Services': 'ltts.com',
+                'Mindtree': 'mindtree.com',
+                'UST': 'ust.com',
+                'KPMG': 'kpmg.com',
+                'IGATE': 'igate.com'
+            };
+            
+            // Add content to cells
+            cells.each(function(d) {
+                const cell = d3.select(this);
+                const cellWidth = d.x1 - d.x0;
+                const cellHeight = d.y1 - d.y0;
+                const minSize = Math.min(cellWidth, cellHeight);
+                
+                // Get logo URL using Clearbit Logo API
+                const domain = companyDomains[d.data.name] || d.data.name.toLowerCase().replace(/\s+/g, '') + '.com';
+                const logoUrl = `https://logo.clearbit.com/${domain}`;
+                
+                // 调整显示逻辑：增大logo和数字，同时保持小方框的自适应
+                // Logo大小：增大比例和最大限制，但保持动态调整
+                const logoSize = Math.min(Math.min(cellWidth, cellHeight) * 0.22, 50);  // 增大logo：从15%到22%，最大从30px到50px
+                // 根据格子大小动态调整字号，增大默认值但保持自适应
+                const nameFontSize = Math.max(7, Math.min(Math.min(cellWidth, cellHeight) * 0.07, 11));  // 公司名称：最小7px，最大11px
+                const valueFontSize = Math.max(9, Math.min(Math.min(cellWidth, cellHeight) * 0.08, 16));  // 数值：最小9px，最大16px（增大）
+                const rankFontSize = Math.max(8, Math.min(Math.min(cellWidth, cellHeight) * 0.06, 11));  // 排名：最小8px，最大11px
+                
+                let content = '<div class="cell-content">';
+                content += '<div class="cell-header">';
+                content += `<span class="cell-rank" style="font-size: ${rankFontSize}px;">#${d.data.rank}</span>`;
+                if (d.data.is_icc) {
+                    content += '<span class="cell-icc-badge">ICC</span>';
+                }
+                content += '</div>';
+                
+                // 降低显示阈值，让更多信息可以显示
+                const showName = minSize > 30;  // 从50降低到30
+                const showValue = minSize > 35;  // 从60降低到35
+                
+                content += `<div class="cell-logo-container">`;
+                content += `<img class="cell-logo" src="${logoUrl}" alt="${d.data.name}" style="max-width: ${logoSize}px; max-height: ${logoSize}px;" onerror="this.style.display='none'; const fallback = this.nextElementSibling; if (fallback) fallback.style.display='block';">`;
+                // Show company name below logo (or as fallback if logo fails)
+                if (showName) {
+                    content += `<div class="cell-company-name" style="font-size: ${nameFontSize}px;">${d.data.name}</div>`;
+                } else {
+                    // Fallback name if logo fails and cell is too small (initially hidden)
+                    content += `<div class="cell-company-name" style="font-size: ${nameFontSize}px; display: none; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 2px 4px; border-radius: 3px;">${d.data.name}</div>`;
+                }
+                content += `</div>`;
+                
+                // 显示数值（降低阈值）
+                if (showValue) {
+                    content += `<div class="cell-value" style="font-size: ${valueFontSize}px;">${d.data.beneficiaries.toLocaleString()}</div>`;
+                }
+                
+                // Show rank change only for ICC companies (显示在右下角)
+                if (d.data.is_icc && d.data.rank_change_direction) {
+                    const arrow = d.data.rank_change_direction === 'up' ? '↑' : '↓';
+                    const changeClass = d.data.rank_change_direction;
+                    content += `<div class="cell-change ${changeClass}"><span class="cell-change-arrow">${arrow}</span><span>${d.data.rank_change_value}</span></div>`;
+                }
+                
+                content += '</div>';
+                cell.html(content);
             });
+        }
         
-        // Add content to cells
-        cells.each(function(d) {
-            const cell = d3.select(this);
-            const cellWidth = d.x1 - d.x0;
-            const cellHeight = d.y1 - d.y0;
-            const minSize = Math.min(cellWidth, cellHeight);
-            
-            let content = '<div class="cell-content">';
-            content += '<div class="cell-header">';
-            content += `<span class="cell-rank">#${d.data.rank}</span>`;
-            if (d.data.is_icc) {
-                content += '<span class="cell-icc-badge">ICC</span>';
-            }
-            content += '</div>';
-            
-            // Only show name if cell is large enough
-            if (minSize > 80) {
-                content += `<div class="cell-name">${d.data.name}</div>`;
-            }
-            
-            // Only show value if cell is large enough
-            if (minSize > 60) {
-                content += `<div class="cell-value">${d.data.beneficiaries.toLocaleString()}</div>`;
+        // 页面加载时创建初始热力图
+        createTreemap();
+        
+        // 公司名称映射表（处理不同年份名称差异）
+        const companyNameMapping = {
+            'AWS': 'AMAZON',
+            'Amazon': 'AMAZON',
+            'Fidelity': 'FIDELITY TECHNOLOGY GROUP LLC D B A FIDELITY INVESTMENTS',
+            'Fidelity Investments': 'FIDELITY TECHNOLOGY GROUP LLC D B A FIDELITY INVESTMENTS'
+        };
+        
+        // 显示公司详情页面
+        function showCompanyDetail(companyName) {
+            // 获取当前点击的公司数据，用于获取全名
+            let clickedCompany = null;
+            for (const year of availableYears) {
+                if (allYearsData[year]) {
+                    clickedCompany = allYearsData[year].find(c => c.name === companyName);
+                    if (clickedCompany) break;
+                }
             }
             
-            // Show rank change if available and cell is large enough
-            if (d.data.rank_change_direction && minSize > 100) {
-                const arrow = d.data.rank_change_direction === 'up' ? '⬆️' : '⬇️';
-                const changeClass = d.data.rank_change_direction;
-                content += `<div class="cell-change ${changeClass}">${arrow} ${d.data.rank_change_value}</div>`;
+            if (!clickedCompany) {
+                alert('未找到该公司数据');
+                return;
             }
             
-            content += '</div>';
-            cell.html(content);
-        });
+            // 使用全名进行匹配（更稳定）
+            const fullName = clickedCompany.full_name.toUpperCase();
+            
+            // 收集该公司历年的数据
+            const companyHistory = [];
+            const sortedYears = availableYears.slice().sort((a, b) => a - b); // 正序（从早到晚）
+            
+            sortedYears.forEach(year => {
+                if (allYearsData[year]) {
+                    // 先尝试用全名匹配
+                    let company = allYearsData[year].find(c => c.full_name.toUpperCase() === fullName);
+                    // 如果找不到，尝试用名称匹配（处理名称映射）
+                    if (!company) {
+                        const mappedName = companyNameMapping[companyName];
+                        if (mappedName) {
+                            company = allYearsData[year].find(c => 
+                                c.name === companyName || 
+                                c.full_name.toUpperCase() === mappedName ||
+                                c.name === mappedName
+                            );
+                        } else {
+                            company = allYearsData[year].find(c => c.name === companyName);
+                        }
+                    }
+                    
+                    if (company) {
+                        companyHistory.push({
+                            year: year,
+                            beneficiaries: company.beneficiaries,
+                            rank: company.rank,
+                            is_icc: company.is_icc
+                        });
+                    }
+                }
+            });
+            
+            if (companyHistory.length === 0) {
+                alert('未找到该公司的历史数据');
+                return;
+            }
+            
+            // 显示模态框
+            const modal = document.getElementById('company-modal');
+            const modalTitle = document.getElementById('modal-company-name');
+            const chartTitle = document.getElementById('modal-chart-title');
+            modalTitle.textContent = companyName;
+            chartTitle.textContent = companyName + '历年H1B申请通过数';
+            modal.classList.add('show');
+            
+            // 创建柱状图
+            createCompanyChart(companyHistory);
+        }
+        
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('company-modal').classList.remove('show');
+        }
+        
+        // 创建公司历年数据柱状图
+        function createCompanyChart(data) {
+            // 清除旧图表
+            d3.select('#company-chart').selectAll('*').remove();
+            
+            const margin = {top: 40, right: 40, bottom: 100, left: 80}; // 增加底部边距以容纳X轴标签
+            const width = 800 - margin.left - margin.right;
+            const height = 500 - margin.top - margin.bottom;
+            
+            const svg = d3.select('#company-chart')
+                .append('svg')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+            
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+            
+            // X轴：年份（正序，从早到晚）
+            const sortedData = data.slice().sort((a, b) => a.year - b.year);
+            const xScale = d3.scaleBand()
+                .domain(sortedData.map(d => d.year))
+                .range([0, width])
+                .padding(0.2);
+            
+            // Y轴：Beneficiaries数量
+            const maxBeneficiaries = d3.max(sortedData, d => d.beneficiaries);
+            const yScale = d3.scaleLinear()
+                .domain([0, maxBeneficiaries * 1.1])
+                .range([height, 0]);
+            
+            // 添加X轴
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(xScale))
+                .selectAll('text')
+                .style('text-anchor', 'middle')
+                .attr('class', 'chart-axis');
+            
+            // 添加X轴标签
+            g.append('text')
+                .attr('x', width / 2)
+                .attr('y', height + 50)
+                .attr('class', 'chart-label')
+                .style('text-anchor', 'middle')
+                .style('font-size', '12px')
+                .text('历年公司排名 | H1B employer 排行榜');
+            
+            // 添加Y轴
+            g.append('g')
+                .call(d3.axisLeft(yScale).tickFormat(d => d.toLocaleString()))
+                .attr('class', 'chart-axis');
+            
+            // 添加Y轴标签
+            g.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', -60)
+                .attr('x', -height / 2)
+                .attr('class', 'chart-label')
+                .style('text-anchor', 'middle')
+                .text('H1B申请通过数');
+            
+            // 添加柱状图（先绘制，这样折线会在上方）
+            g.selectAll('.chart-bar')
+                .data(sortedData)
+                .enter()
+                .append('rect')
+                .attr('class', 'chart-bar')
+                .attr('x', d => xScale(d.year))
+                .attr('y', d => yScale(d.beneficiaries))
+                .attr('width', xScale.bandwidth())
+                .attr('height', d => height - yScale(d.beneficiaries))
+                .attr('fill', d => d.is_icc ? '#9EBA83' : '#9EBA83')
+                .on('mouseenter', function(event, d) {
+                    d3.select(this).attr('opacity', 0.7);
+                    const tooltip = d3.select('#tooltip');
+                    tooltip.html(`
+                        <strong>${d.year}</strong><br>
+                        H1B申请通过数: ${d.beneficiaries.toLocaleString()}<br>
+                        Rank: #${d.rank}
+                    `);
+                    tooltip.classed('show', true);
+                })
+                .on('mouseleave', function() {
+                    d3.select(this).attr('opacity', 1);
+                    d3.select('#tooltip').classed('show', false);
+                })
+                .on('mousemove', function(event) {
+                    const tooltip = d3.select('#tooltip');
+                    // 使用clientX/clientY，因为tooltip是fixed定位，相对于视口
+                    // 让tooltip紧贴光标
+                    const offset = 8;
+                    tooltip.style('left', (event.clientX + offset) + 'px')
+                           .style('top', (event.clientY + offset) + 'px');
+                });
+            
+            // 添加折线（在柱状图上方，往上移动更多避免和数字重合）
+            const lineOffset = 25; // 从10px改为25px，往上移动更多
+            const line = d3.line()
+                .x(d => xScale(d.year) + xScale.bandwidth() / 2)
+                .y(d => yScale(d.beneficiaries) - lineOffset) // 在柱子上方25px
+                .curve(d3.curveMonotoneX);
+            
+            g.append('path')
+                .datum(sortedData)
+                .attr('fill', 'none')
+                .attr('stroke', '#9EBA83')
+                .attr('stroke-width', 2)
+                .attr('d', line);
+            
+            // 添加折线上的点
+            g.selectAll('.line-point')
+                .data(sortedData)
+                .enter()
+                .append('circle')
+                .attr('cx', d => xScale(d.year) + xScale.bandwidth() / 2)
+                .attr('cy', d => yScale(d.beneficiaries) - lineOffset)
+                .attr('r', 4)
+                .attr('fill', '#9EBA83')
+                .attr('stroke', 'white')
+                .attr('stroke-width', 2);
+            
+            // 在最后一个点（最近的年份）添加箭头
+            if (sortedData.length > 0) {
+                const lastPoint = sortedData[sortedData.length - 1];
+                const secondLastPoint = sortedData.length > 1 ? sortedData[sortedData.length - 2] : null;
+                
+                if (secondLastPoint) {
+                    const x1 = xScale(secondLastPoint.year) + xScale.bandwidth() / 2;
+                    const y1 = yScale(secondLastPoint.beneficiaries) - lineOffset;
+                    const x2 = xScale(lastPoint.year) + xScale.bandwidth() / 2;
+                    const y2 = yScale(lastPoint.beneficiaries) - lineOffset;
+                    
+                    // 计算箭头角度
+                    const angle = Math.atan2(y2 - y1, x2 - x1);
+                    const arrowLength = 10;
+                    const arrowAngle = Math.PI / 6;
+                    
+                    // 绘制箭头
+                    const arrowPath = `M ${x2} ${y2} L ${x2 - arrowLength * Math.cos(angle - arrowAngle)} ${y2 - arrowLength * Math.sin(angle - arrowAngle)} M ${x2} ${y2} L ${x2 - arrowLength * Math.cos(angle + arrowAngle)} ${y2 - arrowLength * Math.sin(angle + arrowAngle)}`;
+                    
+                    g.append('path')
+                        .attr('d', arrowPath)
+                        .attr('stroke', '#9EBA83')
+                        .attr('stroke-width', 2)
+                        .attr('fill', 'none')
+                        .attr('stroke-linecap', 'round');
+                }
+            }
+            
+            // 在柱子上方显示数值（如果柱子足够高）
+            g.selectAll('.bar-value')
+                .data(sortedData)
+                .enter()
+                .append('text')
+                .attr('class', 'chart-label')
+                .attr('x', d => xScale(d.year) + xScale.bandwidth() / 2)
+                .attr('y', d => {
+                    const barHeight = height - yScale(d.beneficiaries);
+                    // 如果柱子高度小于30px，将标签放在柱子内部顶部
+                    return barHeight < 30 ? yScale(d.beneficiaries) + 15 : yScale(d.beneficiaries) - 5;
+                })
+                .attr('text-anchor', 'middle')
+                .attr('fill', d => {
+                    const barHeight = height - yScale(d.beneficiaries);
+                    return barHeight < 30 ? '#fff' : '#666';
+                })
+                .style('font-weight', d => {
+                    const barHeight = height - yScale(d.beneficiaries);
+                    return barHeight < 30 ? 'bold' : 'normal';
+                })
+                .text(d => d.beneficiaries.toLocaleString());
+            
+            // 在柱子下方显示排名（往下调整，避免和年份重合）
+            g.selectAll('.bar-rank')
+                .data(sortedData)
+                .enter()
+                .append('text')
+                .attr('class', 'chart-label')
+                .attr('x', d => xScale(d.year) + xScale.bandwidth() / 2)
+                .attr('y', height + 35)  // 从20改为35，往下调整
+                .attr('text-anchor', 'middle')
+                .style('font-weight', 'bold')
+                .text(d => `Rank #${d.rank}`);
+        }
+        
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('company-modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
     </script>
 </body>
 </html>
